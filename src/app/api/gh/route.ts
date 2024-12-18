@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { WebSocketServer } from "ws";
+import { webhooks } from "../../data";
 
 const wss = new WebSocketServer({ port: 4221 });
 wss.on("connection", (ws) => {
-  console.log("Client connected", run);
-  ws.send(JSON.stringify(run));
+  console.log("Client connected", webhooks);
+  ws.send(JSON.stringify(webhooks));
 });
-
-const run = [];
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -31,7 +30,7 @@ export async function POST(request: NextRequest) {
     sender,
     senderAvatar,
   };
-  run.push(info);
+  webhooks.push(info);
 
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {

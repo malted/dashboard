@@ -3,13 +3,22 @@
 import moment from "moment/moment";
 import { useEffect, useState } from "react";
 
-// import Image from "next/image";
+let ws;
 
 export default function Home() {
   const [events, setEvents] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket("ws://localhost:4221");
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`);
+    setInterval(() => {
+      if (ws.readyState !== ws.OPEN) {
+        ws = new WebSocket(`${protocol}//${window.location.host}/api/ws`);
+        return;
+      }
+
+      ws.send(`{"event":"ping"}`);
+    }, 29_000);
 
     ws.onopen = () => {
       console.log("connected to websocket");
